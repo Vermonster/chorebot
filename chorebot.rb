@@ -13,9 +13,9 @@ def post_message(message)
 end
 
 def current_trash_assignee
-  return 'asross'
   candidates = member_names
-  candidates[Date.today.jd % candidates.length]
+  weekday_of_year = Date.today.cweek*5 + Date.today.wday
+  candidates[weekday_of_year % candidates.length]
 end
 
 def morning_trash_message
