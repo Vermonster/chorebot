@@ -16,17 +16,17 @@ puts "starting scheduler in foreground"
 scheduler = Rufus::Scheduler.new
 
 # first reminder is 9:45am
-scheduler.cron "45 9 * * 1-5" do
+scheduler.cron "45 9 * * 1-5 #{ENV['TZ']}" do
   morning_trash_message
 end
 
 # last reminder is 4:15pm
-scheduler.cron "15 16 * * 1-5" do
+scheduler.cron "15 16 * * 1-5 #{ENV['TZ']}" do
   afternoon_trash_message
 end
 
 # cleanup is every Monday at 3:30
-scheduler.cron "30 15 * * 1" do
+scheduler.cron "30 15 * * 1 #{ENV['TZ']}" do
   weekly_cleanup_message
 end
 
