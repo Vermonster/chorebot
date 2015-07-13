@@ -2,8 +2,8 @@ require 'pry'
 require 'httparty'
 
 def member_names
-  HTTParty.get(ENV['SLACK_MEMBERS_URL'])['members'].each_with_object([]) do |member, names|
-    names << member['name'] unless member['is_restricted']
+  HTTParty.get(ENV['SLACK_MEMBERS_URL'])['members'].each_with_object([]) do |m, names|
+    names << m['name'] if m['profile']['email'] =~ /vermonster.com$/ && !m['deleted']
   end
 end
 
