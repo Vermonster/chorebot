@@ -18,13 +18,11 @@ def assignees_for(day, candidates)
   number_of_chores = 3
   seq = number_of_chores * weekday_of_year + start_value
 
-  victims = []
-  number_of_chores.times {|i| victims << candidates[(seq + i) % candidates.length] }
-  victims
+  number_of_chores.times.map { |i| candidates[(seq + i) % candidates.length] }
 end
 
 def assign_chores(date = Date.today)
-  member1, member2, member3  = assignees_for(date, member_names)
+  member1, member2, member3  = assignees_for(date, member_names).shuffle
   {
     trash: "<@#{member1}> and <@#{member2}>",
     dishes: "<@#{member3}>"

@@ -16,8 +16,9 @@ describe 'ChoreBot' do
   end
 
   it '.assign_chore' do
-    expect(assign_chores(Date.new(2015,7,1))).to eq({:trash=>"<@7> and <@1>", :dishes=>"<@2>"})
-    expect(assign_chores(Date.new(2015,7,2))).to eq({:trash=>"<@3> and <@4>", :dishes=>"<@5>"})
+    expect(assign_chores(Date.new(2015,7,1)).values.to_s).to include "7", "1", "2"
+    expect(assign_chores(Date.new(2015,7,2)).values.to_s).to include "3", "4", "5"
+    expect(assign_chores(Date.new(2015,7,3)).values.to_s).to include "6", "7", "1"
   end
 
 end
