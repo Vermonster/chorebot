@@ -13,24 +13,34 @@ def post_message(message)
 end
 
 def assignees_for(day, candidates)
-  i1 = 2*(day.cweek*5 + day.wday) + 5
-  i2 = i1 + 1
-  member1 = candidates[i1 % candidates.length]
-  member2 = candidates[i2 % candidates.length]
-  [member1, member2]
+  weekday_of_year = day.cweek * 5 + day.wday
+  start_value = 5
+  number_of_chores = 3
+  seq = number_of_chores * weekday_of_year + start_value
+
+  victims = []
+  number_of_chores.times {|i| victims << candidates[(seq + i) % candidates.length] }
+  victims
 end
 
-def current_trash_assignees
-  member1, member2 = assignees_for(Date.today, member_names)
-  "<@#{member1}> and <@#{member2}>"
+def assign_chores(date = Date.today)
+  member1, member2, member3  = assignees_for(date, member_names)
+  {
+    trash: "<@#{member1}> and <@#{member2}>",
+    dishes: "<@#{member3}>"
+  }
 end
 
-def morning_trash_message
-  post_message("Good morning #{current_trash_assignees}! It's your turn to take out the trash!")
+def morning_chore_message
+  current_assignees = assign_chores
+  post_message("Good morning #{current_assignees[:trash]}! It\'s your turn to take out the trash!")
+  post_message("And howdy #{current_assignees[:dishes]}. You are in charge of dishes.")
 end
 
-def afternoon_trash_message
-  post_message("Good afternoon #{current_trash_assignees}! Did you remember to take out the trash?")
+def afternoon_chore_message
+  current_assignees = assign_chores
+  post_message("#{current_assignees[:trash]}! Did you remember to take out the trash?")
+  post_message("Oh, and  #{current_assignees[:dishes]}, did you remember the dishes?")
 end
 
 def weekly_cleanup_message
