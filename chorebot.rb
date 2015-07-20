@@ -34,5 +34,5 @@ def afternoon_trash_message
 end
 
 def weekly_cleanup_message
-  post_message("Hey <@channel>, time to clean up the office!")
+  post_message("Hey <!channel>, time to clean up the office!")
 end
