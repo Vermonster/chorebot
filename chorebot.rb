@@ -50,3 +50,7 @@ def weekly_snack_message
   snack_czar = candidates[Date.today.cweek % candidates.length]
   post_message("I hereby appoint <@#{snack_czar}> to be this week's Snack Czar")
 end
+
+def random_morning_message
+  post_message("Give a little shout-out to <@#{member_names.sample}>!")
+end
