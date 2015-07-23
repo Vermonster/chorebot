@@ -48,7 +48,7 @@ end
 def weekly_snack_message
   candidates = member_names.sort_by { |name| Digest::SHA256.hexdigest(name) }
   snack_czar = candidates[Date.today.cweek % candidates.length]
-  post_message("I hereby appoint <@#{snack_czar}> to be this week's Snack Czar")
+  post_message("I hereby appoint <@#{snack_czar}> to be this week's Snack Czar. \n Forgot what to do? \n https://docs.google.com/document/d/1ZM1W3eJc4qX2-OJamy4-K4lXrPczgk-VO8hlOFdPbq0/edit")
 end
 
 def random_morning_message
