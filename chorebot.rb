@@ -1,5 +1,6 @@
 require 'pry'
 require 'httparty'
+require 'digest'
 
 def member_names
   HTTParty.get(ENV['SLACK_MEMBERS_URL'])['members'].each_with_object([]) do |m, names|
@@ -12,10 +13,9 @@ def post_message(message)
   HTTParty.post(ENV['SLACK_WEBHOOK_URL'], body: params.to_json)
 end
 
-def assignees_for(day, candidates)
+def assignees_for(day, candidates, number_of_chores = 3 )
   weekday_of_year = day.cweek * 5 + day.wday
   start_value = 5
-  number_of_chores = 3
   seq = number_of_chores * weekday_of_year + start_value
 
   number_of_chores.times.map { |i| candidates[(seq + i) % candidates.length] }
@@ -43,4 +43,10 @@ end
 
 def weekly_cleanup_message
   post_message("Hey <!channel>, time to clean up the office!")
+end
+
+def weekly_snack_message
+  candidates = member_names.sort_by { |name| Digest::SHA256.hexdigest(name) }
+  snack_czar = candidates[Date.today.cweek % candidates.length]
+  post_message("I hereby appoint <@#{snack_czar}> to be this week's Snack Czar")
 end

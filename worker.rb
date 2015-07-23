@@ -30,6 +30,11 @@ scheduler.cron "30 15 * * 1 #{ENV['TZ']}" do
   weekly_cleanup_message
 end
 
+#snack czar assumes power at 9am on Monday
+scheduler.cron "00 9 * * 1 #{ENV['TZ']}" do
+  weekly_snack_message
+end
+
 scheduler.join
 
 puts "stopping http server"
