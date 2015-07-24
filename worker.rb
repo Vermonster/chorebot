@@ -17,17 +17,22 @@ scheduler = Rufus::Scheduler.new
 
 # first reminder is 9:45am
 scheduler.cron "45 9 * * 1-5 #{ENV['TZ']}" do
-  morning_trash_message
+  morning_chore_message
 end
 
 # last reminder is 4:15pm
 scheduler.cron "15 16 * * 1-5 #{ENV['TZ']}" do
-  afternoon_trash_message
+  afternoon_chore_message
 end
 
 # cleanup is every Monday at 3:30
 scheduler.cron "30 15 * * 1 #{ENV['TZ']}" do
   weekly_cleanup_message
+end
+
+#snack czar assumes power at 9am on Monday
+scheduler.cron "0 9 * * 1 #{ENV['TZ']}" do
+  weekly_snack_message
 end
 
 scheduler.join
