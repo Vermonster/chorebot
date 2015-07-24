@@ -25,20 +25,13 @@ scheduler.cron "15 16 * * 1-5 #{ENV['TZ']}" do
   afternoon_chore_message
 end
 
-# daily 10 am chance at a random employee mention
-scheduler.cron "00 10 * * 1-5 #{ENV['TZ']}" do
-  if rand(10) == 1
-    random_morning_message
-  end
-end
-
 # cleanup is every Monday at 3:30
 scheduler.cron "30 15 * * 1 #{ENV['TZ']}" do
   weekly_cleanup_message
 end
 
 #snack czar assumes power at 9am on Monday
-scheduler.cron "00 9 * * 1 #{ENV['TZ']}" do
+scheduler.cron "0 9 * * 1 #{ENV['TZ']}" do
   weekly_snack_message
 end
 

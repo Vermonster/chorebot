@@ -13,32 +13,27 @@ def post_message(message)
   HTTParty.post(ENV['SLACK_WEBHOOK_URL'], body: params.to_json)
 end
 
-def assignees_for(day, candidates, number_of_chores = 3 )
-  weekday_of_year = day.cweek * 5 + day.wday
-  start_value = 5
-  seq = number_of_chores * weekday_of_year + start_value
-
-  number_of_chores.times.map { |i| candidates[(seq + i) % candidates.length] }
+def chore_assignees(date = Date.today)
+  # pick the next three vermonsters who should get chores, then randomize
+  # which ones they get
+  assignees_for(date, member_names, 3, 2).shuffle(random: random_for(date))
 end
 
-def assign_chores(date = Date.today)
-  member1, member2, member3  = assignees_for(date, member_names).shuffle
-  {
-    trash: "<@#{member1}> and <@#{member2}>",
-    dishes: "<@#{member3}>"
-  }
+def snack_czar
+  # cycle through vermonsters at a rate of one per week
+  # but using a different order than we do for chores
+  candidates = member_names.sort_by { |name| Digest::SHA256.hexdigest(name) }
+  candidates[Date.today.cweek % candidates.length]
 end
 
 def morning_chore_message
-  current_assignees = assign_chores
-  post_message("Good morning #{current_assignees[:trash]}! It\'s your turn to take out the trash!")
-  post_message("And howdy #{current_assignees[:dishes]}. You are in charge of dishes.")
+  t1, t2, d = chore_assignees
+  post_message("Good morning <@#{t1}> and <@#{t2}>! It's your turn to take out the trash!\nAnd howdy, <@#{d}>. You're on dishes.")
 end
 
 def afternoon_chore_message
-  current_assignees = assign_chores
-  post_message("#{current_assignees[:trash]}! Did you remember to take out the trash?")
-  post_message("Oh, and  #{current_assignees[:dishes]}, did you remember the dishes?")
+  t1, t2, d = chore_assignees
+  post_message("Good afternoon <@#{t1}> and <@#{t2}>! Did you remember to take out the trash?\nAnd everyone else, please clean any remaining dishes so <@#{d}> doesn't have to!")
 end
 
 def weekly_cleanup_message
@@ -46,11 +41,21 @@ def weekly_cleanup_message
 end
 
 def weekly_snack_message
-  candidates = member_names.sort_by { |name| Digest::SHA256.hexdigest(name) }
-  snack_czar = candidates[Date.today.cweek % candidates.length]
-  post_message("I hereby appoint <@#{snack_czar}> to be this week's Snack Czar. \n Forgot what to do? \n https://docs.google.com/document/d/1ZM1W3eJc4qX2-OJamy4-K4lXrPczgk-VO8hlOFdPbq0/edit")
+  post_message("I hereby appoint <@#{snack_czar}> to be this week's Snack Czar/ina.\nForgot what to do? <https://docs.google.com/document/d/1ZM1W3eJc4qX2-OJamy4-K4lXrPczgk-VO8hlOFdPbq0/edit|Click here!>")
 end
 
-def random_morning_message
-  post_message("Give a little shout-out to <@#{member_names.sample}>!")
+# pseudo-private methods
+
+def random_for(date)
+  # random seed deterministically generated from the date, so the "shuffling"
+  # is the same in the morning and afternoon
+  Random.new(date.to_time.to_i)
+end
+
+def assignees_for(day, candidates, number_of_chores, offset = 0)
+  # cycle through the weekdays of the year to pick a different set
+  # of {number_of_chores} candidates each weekday
+  weekday_of_year = day.cweek * 5 + day.wday
+  seq = number_of_chores * weekday_of_year + offset
+  number_of_chores.times.map { |i| candidates[(seq + i) % candidates.length] }
 end
