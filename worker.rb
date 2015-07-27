@@ -30,8 +30,8 @@ scheduler.cron "30 15 * * 1 #{ENV['TZ']}" do
   weekly_cleanup_message
 end
 
-#snack czar assumes power at 9am on Monday
-scheduler.cron "0 9 * * 1 #{ENV['TZ']}" do
+#snack czar assumes power at 9am on Wednesday
+scheduler.cron "0 9 * * 3 #{ENV['TZ']}" do
   weekly_snack_message
 end
 
