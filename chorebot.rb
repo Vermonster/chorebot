@@ -42,7 +42,7 @@ end
 
 def weekly_snack_message
   m = "I hereby appoint <@#{snack_czar}> to be this week's Snack Czar/ina.\nForgot what to do? <https://docs.google.com/document/d/1ZM1W3eJc4qX2-OJamy4-K4lXrPczgk-VO8hlOFdPbq0/edit|Click here!>"
-  post_message(rand < 0.05 ? rr(m) : m)
+  post_message rr(m)
 end
 
 # pseudo-private methods
