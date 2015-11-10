@@ -36,6 +36,7 @@ end
 
 def weekly_cleanup_message
   post_message("Hey <!channel>, time to clean up the office!")
+  post_message("Also, remember to order <http://inst.cr/t/yaQhcx|snacks>, my precious :gollum: :ring:")
 end
 
 def weekly_snack_message
