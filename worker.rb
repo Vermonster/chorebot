@@ -25,8 +25,8 @@ scheduler.cron "15 16 * * 1-5 #{ENV['TZ']}" do
   afternoon_chore_message
 end
 
-# cleanup is every Monday at 1:15
-scheduler.cron "15 13 * * 1 #{ENV['TZ']}" do
+# cleanup is every Monday at 9:50
+scheduler.cron "50 9 * * 1 #{ENV['TZ']}" do
   weekly_cleanup_message
 end
 
