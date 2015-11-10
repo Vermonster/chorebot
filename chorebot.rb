@@ -19,11 +19,9 @@ def chore_assignees(date = Date.today)
   assignees_for(date, member_names, 3, 2).shuffle(random: random_for(date))
 end
 
-def snack_czar
-  # cycle through vermonsters at a rate of one per week
-  # but using a different order than we do for chores
-  candidates = member_names.sort_by { |name| Digest::SHA256.hexdigest(name) }
-  candidates[Date.today.cweek % candidates.length]
+def rotating_store(day = Date.today)
+  weekday_of_year = day.cweek * 5 + day.wday
+  ['HMart', 'Star Market', 'Whole Foods'][weekday_of_year % 3]
 end
 
 def morning_chore_message
@@ -41,7 +39,7 @@ def weekly_cleanup_message
 end
 
 def weekly_snack_message
-  post_message "I hereby appoint <@#{snack_czar}> to be this week's Snack Czar/ina.\nForgot what to do? <https://docs.google.com/document/d/1ZM1W3eJc4qX2-OJamy4-K4lXrPczgk-VO8hlOFdPbq0/edit|Click here!>"
+  post_message "It's snack time. <http://inst.cr/t/yaQhcx|Here's the cart>. This week, we suggest #{rotating_store}. :gollum:"
 end
 
 # pseudo-private methods
@@ -58,8 +56,4 @@ def assignees_for(day, candidates, number_of_chores, offset = 0)
   weekday_of_year = day.cweek * 5 + day.wday
   seq = number_of_chores * weekday_of_year + offset
   number_of_chores.times.map { |i| candidates[(seq + i) % candidates.length] }
-end
-
-def rr(message_with_link)
-  message_with_link.sub(/<[^>]+\|([^>]+)>/) { "<https://www.youtube.com/watch?v=oHg5SJYRHA0|#{$1}>" }
 end
