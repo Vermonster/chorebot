@@ -20,8 +20,7 @@ def chore_assignees(date = Date.today)
 end
 
 def rotating_store(day = Date.today)
-  weekday_of_year = day.cweek * 5 + day.wday
-  ['HMart', 'Star Market', 'Whole Foods'][weekday_of_year % 3]
+  ['HMart', 'Star Market', 'Whole Foods'][day.cweek % 3]
 end
 
 def morning_chore_message
