@@ -8,8 +8,8 @@ def member_names
   end
 end
 
-def post_message(message)
-  params = { text: message, username: 'chorebot', icon_emoji: ':shipit:' }
+def post_message(message, username='chorebot', icon_emoji=':shipit:')
+  params = { text: message, username: username, icon_emoji: icon_emoji }
   HTTParty.post(ENV['SLACK_WEBHOOK_URL'], body: params.to_json)
 end
 
@@ -36,7 +36,7 @@ end
 
 def weekly_cleanup_message
   post_message("Hey <!channel>, time to clean up the office!")
-  post_message("Also, remember to order <http://inst.cr/t/yaQhcx|snacks>, my precious :gollum: :ring:")
+  post_message("Also, remember to order <http://inst.cr/t/yaQhcx|snacks>, my precious :ring:", "Snack Gollum", ":gollum:")
 end
 
 def weekly_snack_message
