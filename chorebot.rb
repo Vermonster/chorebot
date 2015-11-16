@@ -35,7 +35,11 @@ end
 
 def weekly_cleanup_message
   post_message("Hey <!channel>, time to clean up the office!")
-  post_message("Also, remember to order <http://inst.cr/t/yaQhcx|snacks>, my precious :ring:", "Snack Gollum", ":gollum:")
+  if coinflip
+    post_message("Also, remember to order <http://inst.cr/t/yaQhcx|snacks>, my precious :ring:", "Snack Gollum", ":gollum:")
+  else
+    post_message("Also, if you want to \"see more\" snacks, <http://inst.cr/t/yaQhcx|order some>.", "Snack Audrey II", ":feedme:")
+  end
 end
 
 def weekly_snack_message
@@ -43,6 +47,10 @@ def weekly_snack_message
 end
 
 # pseudo-private methods
+
+def coinflip
+  rand < 0.5
+end
 
 def random_for(date)
   # random seed deterministically generated from the date, so the "shuffling"
