@@ -35,7 +35,7 @@ end
 
 def weekly_cleanup_message
   post_message("Hey <!channel>, time to clean up the office!")
-  if false
+  if coinflip
     post_message("Also, remember to order <http://inst.cr/t/yaQhcx|snacks>, my precious :ring:", "Snack Gollum", ":gollum:")
   else
     post_message("Also, if you want to \"see more\" snacks, <http://inst.cr/t/yaQhcx|order some>.", "Snack Audrey II", ":feedme:")
@@ -43,7 +43,7 @@ def weekly_cleanup_message
 end
 
 def weekly_snack_message
-  post_message "It's snack time. <http://inst.cr/t/yaQhcx|Here's the cart>. This week, we suggest #{rotating_store}. :gollum:"
+  post_message "It's snack time! <http://inst.cr/t/yaQhcx|Here's the cart>. This week, we suggest #{rotating_store}. :gollum:"
 end
 
 # pseudo-private methods
