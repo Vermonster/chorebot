@@ -126,7 +126,7 @@ PLANTS = {
     name: 'Myrtle',
     heading: 'h.2lttmnmb2ozt',
     image_path: 'myrtle.png',
-    scheduling: weekly
+    scheduling: weekly(1)
   },
   maud_frank_and_henri: {
     name: 'Maud, Frank, and Henri',

@@ -56,9 +56,8 @@ def plant_chore_messages
     if plant[:scheduling].run_today?
       assignee = plant_assignee_for(plant[:scheduling].next_index)
       params = {
-        channel: "@#{assignee}",
         username: plant[:name],
-        text: "Hey #{assignee}, could you please water me today? <#{PLANT_URL}#heading=#{plant[:heading]}|Instructions here!>",
+        text: "Hey <@#{assignee}>, could you please water me today? <#{PLANT_URL}#heading=#{plant[:heading]}|Instructions here!>",
         icon_url: "#{CHOREBOT_URL}/#{plant[:image_path]}"
       }
       HTTParty.post(ENV['SLACK_WEBHOOK_URL'], body: params.to_json)
