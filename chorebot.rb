@@ -1,6 +1,11 @@
 require 'pry'
 require 'httparty'
 require 'digest'
+require_relative './plants'
+
+CHOREBOT_URL = 'https://mysterious-fortress-9011.herokuapp.com'
+PLANT_URL = 'https://docs.google.com/document/d/1HEjcqnwFoUmNvBTviB_0V4vRQM9ERj3GbxMCp8dNY7A'
+PLANT_CHORE_BLACKLIST = [] # add your slack name here if you want to opt out of plant duties
 
 def member_names
   HTTParty.get(ENV['SLACK_MEMBERS_URL'])['members'].each_with_object([]) do |m, names|
@@ -46,7 +51,26 @@ def weekly_snack_message
   post_message "It's snack time! <http://inst.cr/t/yaQhcx|Here's the cart>. This week, we suggest #{rotating_store}. :gollum:"
 end
 
+def plant_chore_messages
+  PLANTS.each do |name, plant|
+    if plant[:scheduling].run_today?
+      assignee = plant_assignee_for(plant[:scheduling].next_index)
+      params = {
+        username: plant[:name],
+        text: "Hey <@#{assignee}>, could you please water me today? <#{PLANT_URL}#heading=#{plant[:heading]}|Instructions here!>",
+        icon_url: "#{CHOREBOT_URL}/#{plant[:image_path]}"
+      }
+      HTTParty.post(ENV['SLACK_WEBHOOK_URL'], body: params.to_json)
+    end
+  end
+end
+
 # pseudo-private methods
+
+def plant_assignee_for(index)
+  candidates = member_names - PLANT_CHORE_BLACKLIST
+  candidates[index % candidates.length]
+end
 
 def coinflip
   rand < 0.5

@@ -18,6 +18,7 @@ scheduler = Rufus::Scheduler.new
 # first reminder is 9:45am
 scheduler.cron "45 9 * * 1-5 #{ENV['TZ']}" do
   morning_chore_message
+  plant_chore_messages
 end
 
 # last reminder is 4:15pm
