@@ -6,11 +6,12 @@ require_relative './plants'
 CHOREBOT_URL = 'https://mysterious-fortress-9011.herokuapp.com'
 PLANT_URL = 'https://docs.google.com/document/d/1HEjcqnwFoUmNvBTviB_0V4vRQM9ERj3GbxMCp8dNY7A'
 PLANT_CHORE_BLACKLIST = [] # add your slack name here if you want to opt out of plant duties
+INACTIVE_MEMBER_NAMES = %w(belac)
 
 def member_names
   HTTParty.get(ENV['SLACK_MEMBERS_URL'])['members'].each_with_object([]) do |m, names|
     names << m['name'] if m['profile']['email'] =~ /vermonster.com$/ && !m['deleted']
-  end
+  end - INACTIVE_MEMBER_NAMES
 end
 
 def post_message(message, username='chorebot', icon_emoji=':shipit:')
