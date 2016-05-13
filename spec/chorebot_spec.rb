@@ -28,7 +28,7 @@ def indexes_and_dates_for(scheduling, iterations = 1000)
   dates = []
   iterations.times do
     if scheduling.run_on?(date)
-      indexes << scheduling.index_on(date)
+      indexes << scheduling.run_index_on(date)
       dates << date
     end
     date = date.next_day
@@ -36,13 +36,22 @@ def indexes_and_dates_for(scheduling, iterations = 1000)
   return [indexes, dates]
 end
 
-describe MonthlyScheduling do
-  it 'increments index once every time run_today? is true' do
-    indexes, dates = indexes_and_dates_for(MonthlyScheduling.new)
-
+shared_examples_for 'a scheduling object' do
+  it 'increments run_index by 1 every time run_today? is true' do
+    indexes, dates = indexes_and_dates_for(scheduling)
     indexes.each_with_index do |index, i|
       expect(index).to eq indexes[0] + i
     end
+  end
+end
+
+describe MonthlyScheduling do
+  it_behaves_like 'a scheduling object' do
+    let(:scheduling) { MonthlyScheduling.new }
+  end
+
+  it 'picks dates every month, with a max of 2 days difference' do
+    indexes, dates = indexes_and_dates_for(MonthlyScheduling.new(1))
 
     dates.each_with_index do |date, i|
       expect(date.month % 12).to eq (dates[0].month + i) % 12
@@ -52,12 +61,12 @@ describe MonthlyScheduling do
 end
 
 describe EveryNDaysScheduling do
-  it 'increments index once every time run_today? is true' do
-    indexes, dates = indexes_and_dates_for(EveryNDaysScheduling.new(10))
+  it_behaves_like 'a scheduling object' do
+    let(:scheduling) { EveryNDaysScheduling.new(8) }
+  end
 
-    indexes.each_with_index do |index, i|
-      expect(index).to eq indexes[0] + i
-    end
+  it 'picks dates every N (plus or minus 2) days' do
+    indexes, dates = indexes_and_dates_for(EveryNDaysScheduling.new(10))
 
     dates[1..-1].each.with_index(1) do |date, i|
       expect([8, 9, 10, 11, 12]).to include((date - dates[i-1]).to_i)
@@ -66,15 +75,40 @@ describe EveryNDaysScheduling do
 end
 
 describe WeeklyScheduling do
-  it 'increments index once every time run_today? is true' do
-    indexes, dates = indexes_and_dates_for(WeeklyScheduling.new)
+  it_behaves_like 'a scheduling object' do
+    let(:scheduling) { WeeklyScheduling.new(:wednesday) }
+  end
 
-    indexes.each_with_index do |index, i|
-      expect(index).to eq indexes[0] + i
-    end
+  it 'picks dates once per week' do
+    indexes, dates = indexes_and_dates_for(WeeklyScheduling.new(:thursday))
 
     dates[1..-1].each.with_index(1) do |date, i|
+      expect(date).to be_thursday
       expect([1,-51]).to include(date.cweek - dates[i-1].cweek)
+    end
+  end
+end
+
+describe SpecificWeekdaysScheduling do
+  it_behaves_like 'a scheduling object' do
+    let(:scheduling) { SpecificWeekdaysScheduling.new(:tuesday, :thursday) }
+  end
+
+  it 'picks alternating weekdays' do
+    indexes, dates = indexes_and_dates_for(SpecificWeekdaysScheduling.new(:monday, :wednesday, :friday))
+
+    dates[1..-1].each.with_index(1) do |date, i|
+      prev = dates[i-1]
+      if prev.monday?
+        expect(date).to be_wednesday
+        expect(date.cweek).to eq prev.cweek
+      elsif prev.wednesday?
+        expect(date).to be_friday
+        expect(date.cweek).to eq prev.cweek
+      elsif prev.friday?
+        expect(date).to be_monday
+        expect([1,-51]).to include(date.cweek - prev.cweek)
+      end
     end
   end
 end

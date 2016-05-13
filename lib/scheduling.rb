@@ -1,0 +1,129 @@
+require 'date'
+
+class Date
+  def self.zero
+    Date.parse('0000-01-01')
+  end
+
+  def days_since_zero
+    (self - self.class.zero).to_i
+  end
+
+  def weeks_since_zero
+    cweek + 52 * year
+  end
+
+  def months_since_zero
+    month + 12 * year
+  end
+
+  def weekend?
+    saturday? || sunday?
+  end
+
+  def weekday?
+    !weekend?
+  end
+end
+
+class Scheduling
+  def run_today?
+    today = Date.today
+    yesterday = today.prev_day
+    day_before = yesterday.prev_day
+    return false if today.weekend?
+    return true if run_on?(today)
+    return true if run_on?(yesterday) && yesterday.weekend?
+    return true if run_on?(day_before) && yesterday.weekend? && day_before.weekend?
+    false
+  end
+
+  def run_index
+    run_index_on(Date.today)
+  end
+
+  def run_on?(date)
+    raise NotImplementedError, "Should return true when it's time"
+  end
+
+  def run_index_on(date)
+    raise NotImplementedError, "Should increase by one every time run_today? is true"
+  end
+
+  def next_run_date
+    date = Date.today
+    until run_on?(date)
+      date = date.next_day
+    end
+    date
+  end
+end
+
+class MonthlyScheduling < Scheduling
+  attr_reader :day_of_month
+
+  def initialize(day_of_month = 1)
+    @day_of_month = day_of_month
+  end
+
+  def run_index_on(date)
+    date.months_since_zero
+  end
+
+  def run_on?(date)
+    date.day == day_of_month
+  end
+end
+
+class EveryNDaysScheduling < Scheduling
+  attr_reader :n
+
+  def initialize(n)
+    @n = n
+  end
+
+  def run_index_on(date)
+    date.days_since_zero / n
+  end
+
+  def run_on?(date)
+    date.days_since_zero % n == 0
+  end
+end
+
+class WeeklyScheduling < EveryNDaysScheduling
+  attr_reader :day_of_week
+
+  def initialize(day_of_week = :monday)
+    @day_of_week = day_of_week
+    raise ArgumentError, 'must pass day name' unless Date::DAYNAMES.any? { |name| name.downcase == day_of_week.to_s }
+  end
+
+  def run_on?(date)
+    date.send("#{day_of_week}?")
+  end
+
+  def run_index_on(date)
+    date.weeks_since_zero
+  end
+end
+
+class SpecificWeekdaysScheduling < Scheduling
+  attr_reader :days
+
+  def initialize(*days)
+    @days = days
+
+    days.each do |d|
+      raise ArgumentError, 'must pass day name' unless Date::DAYNAMES.any? { |name| name.downcase == d.to_s }
+    end
+  end
+
+  def run_on?(date)
+    days.any? { |d| date.send("#{d}?") }
+  end
+
+  def run_index_on(date)
+    date.weeks_since_zero * days.length + days.index { |d| date.send("#{d}?") }
+  end
+end
