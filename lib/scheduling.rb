@@ -59,59 +59,34 @@ class Scheduling
   end
 end
 
+# Example:
+#   MonthlyScheduling.new([1, 15]) will schedule tasks for the 1st and 15th of each month
 class MonthlyScheduling < Scheduling
-  attr_reader :day_of_month
-
-  def initialize(day_of_month = 1)
-    @day_of_month = day_of_month
-  end
-
-  def run_index_on(date)
-    date.months_since_zero
-  end
-
-  def run_on?(date)
-    date.day == day_of_month
-  end
-end
-
-class EveryNDaysScheduling < Scheduling
-  attr_reader :n
-
-  def initialize(n)
-    @n = n
-  end
-
-  def run_index_on(date)
-    date.days_since_zero / n
-  end
-
-  def run_on?(date)
-    date.days_since_zero % n == 0
-  end
-end
-
-class WeeklyScheduling < EveryNDaysScheduling
-  attr_reader :day_of_week
-
-  def initialize(day_of_week = :monday)
-    @day_of_week = day_of_week
-    raise ArgumentError, 'must pass day name' unless Date::DAYNAMES.any? { |name| name.downcase == day_of_week.to_s }
-  end
-
-  def run_on?(date)
-    date.send("#{day_of_week}?")
-  end
-
-  def run_index_on(date)
-    date.weeks_since_zero
-  end
-end
-
-class SpecificWeekdaysScheduling < Scheduling
   attr_reader :days
 
-  def initialize(*days)
+  def initialize(days = [1])
+    @days = days
+
+    days.each do |d|
+      raise ArgumentError, 'must pass integer <= 31' unless d.is_a?(Fixnum) && d <= 31
+    end
+  end
+
+  def run_on?(date)
+    days.include?(date.day)
+  end
+
+  def run_index_on(date)
+    date.months_since_zero * days.length + days.index(date.day)
+  end
+end
+
+# Example:
+#   WeeklyScheduling.new([:monday, :wednesday, :friday]) will schedule tasks every MWF
+class WeeklyScheduling < Scheduling
+  attr_reader :days
+
+  def initialize(days = [:monday])
     @days = days
 
     days.each do |d|
@@ -125,5 +100,24 @@ class SpecificWeekdaysScheduling < Scheduling
 
   def run_index_on(date)
     date.weeks_since_zero * days.length + days.index { |d| date.send("#{d}?") }
+  end
+end
+
+# Example:
+#   EveryNDaysScheduling.new(10) will schedule tasks every 10 or so days
+class EveryNDaysScheduling < Scheduling
+  attr_reader :n, :offset
+
+  def initialize(n, offset = 0)
+    @n = n
+    @offset = offset
+  end
+
+  def run_index_on(date)
+    (offset + date.days_since_zero) / n
+  end
+
+  def run_on?(date)
+    (offset + date.days_since_zero) % n == 0
   end
 end

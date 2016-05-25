@@ -47,15 +47,28 @@ end
 
 describe MonthlyScheduling do
   it_behaves_like 'a scheduling object' do
-    let(:scheduling) { MonthlyScheduling.new }
+    let(:scheduling) { MonthlyScheduling.new([1]) }
+  end
+
+  it_behaves_like 'a scheduling object' do
+    let(:scheduling) { MonthlyScheduling.new([2, 15]) }
   end
 
   it 'picks dates every month, with a max of 2 days difference' do
-    indexes, dates = indexes_and_dates_for(MonthlyScheduling.new(1))
+    indexes, dates = indexes_and_dates_for(MonthlyScheduling.new([1]))
 
     dates.each_with_index do |date, i|
       expect(date.month % 12).to eq (dates[0].month + i) % 12
       expect([1, 2, 3]).to include date.day
+    end
+  end
+
+  it 'picks dates every month, with a max of 2 days difference' do
+    indexes, dates = indexes_and_dates_for(MonthlyScheduling.new([5, 12]))
+
+    dates.each_with_index do |date, i|
+      expect(date.month % 12).to eq (dates[0].month + i/2) % 12
+      expect([5, 6, 7, 12, 13, 14]).to include date.day
     end
   end
 end
@@ -76,26 +89,24 @@ end
 
 describe WeeklyScheduling do
   it_behaves_like 'a scheduling object' do
-    let(:scheduling) { WeeklyScheduling.new(:wednesday) }
+    let(:scheduling) { WeeklyScheduling.new([:wednesday]) }
+  end
+
+  it_behaves_like 'a scheduling object' do
+    let(:scheduling) { WeeklyScheduling.new([:tuesday, :thursday]) }
   end
 
   it 'picks dates once per week' do
-    indexes, dates = indexes_and_dates_for(WeeklyScheduling.new(:thursday))
+    indexes, dates = indexes_and_dates_for(WeeklyScheduling.new([:thursday]))
 
     dates[1..-1].each.with_index(1) do |date, i|
       expect(date).to be_thursday
       expect([1,-51]).to include(date.cweek - dates[i-1].cweek)
     end
   end
-end
-
-describe SpecificWeekdaysScheduling do
-  it_behaves_like 'a scheduling object' do
-    let(:scheduling) { SpecificWeekdaysScheduling.new(:tuesday, :thursday) }
-  end
 
   it 'picks alternating weekdays' do
-    indexes, dates = indexes_and_dates_for(SpecificWeekdaysScheduling.new(:monday, :wednesday, :friday))
+    indexes, dates = indexes_and_dates_for(WeeklyScheduling.new([:monday, :wednesday, :friday]))
 
     dates[1..-1].each.with_index(1) do |date, i|
       prev = dates[i-1]

@@ -18,7 +18,7 @@ class OffsetScheduling
 end
 
 def monthly(offset=0)
-  OffsetScheduling.new(MonthlyScheduling.new(1), offset)
+  OffsetScheduling.new(MonthlyScheduling.new([1]), offset)
 end
 
 def every_n_days(n, offset=0)
@@ -26,7 +26,7 @@ def every_n_days(n, offset=0)
 end
 
 def weekly(offset=0)
-  OffsetScheduling.new(WeeklyScheduling.new(:monday), offset)
+  OffsetScheduling.new(WeeklyScheduling.new([:monday]), offset)
 end
 
 PLANTS = {
