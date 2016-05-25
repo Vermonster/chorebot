@@ -19,6 +19,25 @@ def post_message(message, username='chorebot', icon_emoji=':shipit:')
   HTTParty.post(ENV['SLACK_WEBHOOK_URL'], body: params.to_json)
 end
 
+def chores
+
+end
+
+def morning_chore_messages
+  chores_today = chores.select(&:run_today?).map(&:morning_assignment_message)
+  if chores_today.count > 0
+    post_message("Chores for today:\n#{chores_today.join("\n")}")
+  end
+end
+
+def afternoon_chore_messages
+  chores_today = chores.select(&:run_today?).map(&:afternoon_assignment_message)
+  if chores_today.count > 0
+    post_message(chores_today.join("\n"))
+  end
+end
+
+
 def chore_assignees(date = Date.today)
   # pick the next three vermonsters who should get chores, then randomize
   # which ones they get
