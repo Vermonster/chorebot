@@ -103,6 +103,12 @@ class WeeklyScheduling < Scheduling
   end
 end
 
+class DailyScheduling < WeeklyScheduling
+  def initialize
+    @days = [:monday, :tuesday, :wednesday, :thursday, :friday]
+  end
+end
+
 # Example:
 #   EveryNDaysScheduling.new(10) will schedule tasks every 10 or so days
 class EveryNDaysScheduling < Scheduling

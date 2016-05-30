@@ -1,12 +1,13 @@
-class Chore
-  attr_reader :name, :scheduling, :n_assignees, :offset, :members
+require_relative './scheduling'
 
-  def initialize(name:, scheduling:, members:, n_assignees: 1, offset: 0)
-    @name = name
+class Chore
+  attr_reader :scheduling, :n_assignees, :offset, :roster
+
+  def initialize(scheduling:, roster:, n_assignees: 1, offset: 0)
     @scheduling = scheduling
     @n_assignees = n_assignees
     @offset = offset # to control which member starts, not anything date-related
-    @members = members
+    @roster = roster
   end
 
   def run_today?
@@ -17,13 +18,11 @@ class Chore
     scheduling.next_run_date
   end
 
-  def run_indexes_on(date)
-    base_index = assignees_per_task * scheduling.run_index_on(date) + offset
-    base_index.upto(base_index + assignees_per_task).to_a
-  end
-
   def assignees_on(date)
-    run_indexes_on(date).map { |i| members[i % members.length] }
+    index = n_assignees * scheduling.run_index_on(date) + offset
+    index.upto(index + n_assignees - 1).map do |i|
+      roster[i % roster.length]
+    end
   end
 
   def assignees
@@ -31,19 +30,15 @@ class Chore
   end
 
   def assignee_mentions
-    assignees.map { |a| "<@#{a}>" }.to_sentence
-  end
-
-  def username
-    'chorebot'
+    assignees.map { |a| "<@#{a}>" }.join(' and ')
   end
 
   def icon_params
-    { icon_emoji: ':shipit:' }
+    { icon_emoji: ':shipit:', username: 'chorebot' }
   end
 
   def post(message)
-    params = { text: message, username: username }.merge(icon_params)
+    params = { text: message }.merge(icon_params)
     HTTParty.post(ENV['SLACK_WEBHOOK_URL'], body: params.to_json)
   end
 
@@ -58,61 +53,57 @@ end
 
 class TrashChore < Chore
   def morning_message
-    "Hey #{assignee_mentions}, it's your turn to take out the trash."
+    "Hi #{assignee_mentions}, it's your turn to take out the trash (bags out after 5pm)."
   end
 
   def afternoon_message
-    "Hey #{assignee_mentions}, did you remember to take out the trash?"
+    "Hi #{assignee_mentions}, did you remember to take out the trash? Remember, bags out after 5pm."
   end
 end
 
 class RecyclingChore < Chore
   def morning_message
-    "Hey #{assignee_mentions}, it's your turn to take out the recycling."
+    "Hey #{assignee_mentions}, you're on recycling."
   end
 
   def afternoon_message
-    "Hey #{assignee_mentions}, did you remember to take out the recycling?"
+    "Hey #{assignee_mentions}, just a reminder to take out the recycling (bags out after 5)."
   end
 end
 
 class PlantChore < Chore
   attr_reader :name, :heading, :image_path
 
-  def initialize(scheduling:, members:, n_assignees: 1, offset: 0, name:, heading:, image_path:)
+  def initialize(scheduling:, roster:, n_assignees: 1, offset: 0, name:, heading:, image_path:)
     @name = name
     @scheduling = scheduling
     @n_assignees = n_assignees
     @offset = offset
-    @members = members
+    @roster = roster
     @name = name
     @heading = heading
     @image_path = image_path
   end
 
   def icon_params
-    { icon_url: "#{PLANT_IMG_URL}/#{image_path}" }
-  end
-
-  def username
-    name
+    { icon_url: "#{ENV['PLANT_IMG_URL']}/#{image_path}", username: name }
   end
 
   def morning_message
-    "Hey #{assignee_mentions}, could you please water me today? <#{PLANT_DOC_URL}#heading=#{heading}|Instructions here!>"
+    "Hello #{assignee_mentions}, could you please water me today? <#{ENV['PLANT_DOC_URL']}#heading=#{heading}|Instructions here!>"
   end
 
   def afternoon_message
-    "Hey #{assignee_mentions}, did you remember to water me today? <#{PLANT_URL}#heading=#{heading}|Instructions here!>"
+    "Hey #{assignee_mentions}, did you remember to water me today? <#{ENV['PLANT_DOC_URL']}#heading=#{heading}|Instructions here!>"
   end
 end
 
 class DishChore < Chore
   def morning_message
-    "Hey #{assignee_mentions}, you're on dishes today."
+    "Good morning #{assignee_mentions}, you're on dishes today."
   end
 
   def afternoon_message
-    "Hey #{assignee_mentions}, hopefully everyone else has done their dishes so you don't have to!"
+    "Hey everyone, please don't forget to wash your dishes so #{assignee_mentions} won't have to!"
   end
 end
