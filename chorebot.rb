@@ -86,10 +86,6 @@ def afternoon_chore_messages
   chores.select(&:run_today?).each(&:afternoon_post)
 end
 
-def rotating_store(day = Date.today)
-  ['HMart', 'Star Market', 'Whole Foods'][day.cweek % 3]
-end
-
 def post_message(message, username='chorebot', icon_emoji=':shipit:')
   params = { text: message, username: username, icon_emoji: icon_emoji }
   HTTParty.post(ENV['SLACK_WEBHOOK_URL'], body: params.to_json)
@@ -98,12 +94,16 @@ end
 def weekly_cleanup_message
   post_message("Hey <!channel>, time to clean up the office!")
   if rand < 0.5
-    post_message("Also, remember to order <http://inst.cr/t/yaQhcx|snacks>, my precious :ring:", "Snack Gollum", ":gollum:")
+    post_message("Also, remember to order <#{ENV['INSTACART_URL']}|snacks>, my precious :ring:", "Snack Gollum", ":gollum:")
   else
-    post_message("Also, if you want to \"see more\" snacks, <http://inst.cr/t/yaQhcx|order some>.", "Snack Audrey II", ":feedme:")
+    post_message("Also, if you want to \"see more\" snacks, <#{ENV['INSTACART_URL']}|order some>.", "Snack Audrey II", ":feedme:")
   end
 end
 
 def weekly_snack_message
-  post_message "It's snack time! <http://inst.cr/t/yaQhcx|Here's the cart>. This week, we suggest #{rotating_store}. :gollum:"
+  post_message "It's snack time! <#{ENV['INSTACART_URL']}|Here's the cart>. This week, we suggest #{rotating_store}. :gollum:"
+end
+
+def rotating_store(day = Date.today)
+  ['HMart', 'Star Market', 'Whole Foods'][day.cweek % 3]
 end
