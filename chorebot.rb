@@ -3,6 +3,8 @@ require 'httparty'
 require 'digest'
 require_relative './lib/chore'
 
+NO_CHORE_LIST = %w(paul)
+
 def member_names
   HTTParty.get(ENV['SLACK_MEMBERS_URL'])['members'].each_with_object([]) do |m, names|
     names << m['name'] if m['profile']['email'] =~ /vermonster.com$/ && !m['deleted']
@@ -10,20 +12,23 @@ def member_names
 end
 
 def chores
-  roster = member_names
+  roster = member_names - NO_CHORE_LIST
   [
     TrashChore.new(
       roster: roster,
       scheduling: WeeklyScheduling.new([:monday, :wednesday, :friday]),
-      n_assignees: 2
+      n_assignees: 2,
+      offset: -8
     ),
     RecyclingChore.new(
       roster: roster,
-      scheduling: WeeklyScheduling.new([:monday, :thursday])
+      scheduling: WeeklyScheduling.new([:monday, :thursday]),
+      offset: -5
     ),
     DishChore.new(
       roster: roster,
-      scheduling: DailyScheduling.new
+      scheduling: DailyScheduling.new,
+      offset: -4
     ),
     PlantChore.new(
       roster: roster,
