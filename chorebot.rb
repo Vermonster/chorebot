@@ -1,6 +1,7 @@
 require 'pry'
 require 'httparty'
 require 'digest'
+require_relative './lib/schedulings'
 require_relative './lib/chores'
 
 NO_CHORE_LIST = %w(paul)
