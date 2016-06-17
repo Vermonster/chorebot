@@ -4,16 +4,21 @@ require 'digest'
 require_relative './lib/schedulings'
 require_relative './lib/chores'
 
-NO_CHORE_LIST = %w(paul)
+NO_CHORE_LIST = %w(paul asross)
 
 def member_names
-  HTTParty.get(ENV['SLACK_MEMBERS_URL'])['members'].each_with_object([]) do |m, names|
-    names << m['name'] if m['profile']['email'] =~ /vermonster.com$/ && !m['deleted']
+  names = []
+  HTTParty.get(ENV['SLACK_MEMBERS_URL'])['members'].each do |m|
+    next unless m['profile']['email'] =~ /vermonster.com$/
+    next if m['deleted']
+    next if NO_CHORE_LIST.include?(m['name'])
+    names << m['name']
   end
+  names
 end
 
 def chores
-  roster = member_names - NO_CHORE_LIST
+  roster = member_names
   [
     TrashChore.new(
       roster: roster,
