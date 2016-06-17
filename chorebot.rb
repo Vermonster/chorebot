@@ -68,13 +68,6 @@ def chores
       heading: 'h.7ymknjojnom7',
       image_path: 'chester.jpg',
       scheduling: EveryNDaysScheduling.new(20)
-    ),
-    PlantChore.new(
-      roster: roster,
-      name: 'Myrtle',
-      heading: 'h.2lttmnmb2ozt',
-      image_path: 'myrtle.png',
-      scheduling: WeeklyScheduling.new([:monday])
     )
   ]
 end
