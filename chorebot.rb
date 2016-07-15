@@ -6,45 +6,28 @@ require_relative './lib/chores'
 
 NO_CHORE_LIST = %w(paul asross jordanking)
 
-def member_names
-  names = []
-  HTTParty.get(ENV['SLACK_MEMBERS_URL'])['members'].each do |m|
-    next unless m['profile']['email'] =~ /vermonster.com$/
-    next if m['deleted']
-    next if NO_CHORE_LIST.include?(m['name'])
-    names << m['name']
-  end
-  names
-end
-
 def chores
-  roster = member_names
   [
     TrashChore.new(
-      roster: roster,
       scheduling: WeeklyScheduling.new([:monday, :wednesday, :friday]),
       n_assignees: 2,
       offset: -8
     ),
     RecyclingChore.new(
-      roster: roster,
       scheduling: WeeklyScheduling.new([:monday, :thursday]),
       offset: -5
     ),
     DishChore.new(
-      roster: roster,
       scheduling: DailyScheduling.new,
       offset: -4
     ),
     PlantChore.new(
-      roster: roster,
       name: 'Bertha',
       heading: 'h.sl24hns7ta7c',
       image_path: "bertha.jpg",
       scheduling: MonthlyScheduling.new
     ),
     PlantChore.new(
-      roster: roster,
       name: 'Edward',
       heading: 'h.wlvxy5bc7z7d',
       image_path: "edward.jpg",
@@ -52,7 +35,6 @@ def chores
       offset: 1
     ),
     PlantChore.new(
-      roster: roster,
       name: 'Lula',
       heading: 'h.nvlbm0zacdtz',
       image_path: "lula.jpg",
@@ -60,7 +42,6 @@ def chores
       offset: 2
     ),
     PlantChore.new(
-      roster: roster,
       name: 'Chester',
       heading: 'h.7ymknjojnom7',
       image_path: 'chester.jpg',

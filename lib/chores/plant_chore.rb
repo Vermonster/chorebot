@@ -3,12 +3,11 @@ require_relative './base_chore'
 class PlantChore < BaseChore
   attr_reader :name, :heading, :image_path
 
-  def initialize(scheduling:, roster:, n_assignees: 1, offset: 0, name:, heading:, image_path:)
+  def initialize(scheduling:, n_assignees: 1, offset: 0, name:, heading:, image_path:)
     @name = name
     @scheduling = scheduling
     @n_assignees = n_assignees
     @offset = offset
-    @roster = roster
     @name = name
     @heading = heading
     @image_path = image_path

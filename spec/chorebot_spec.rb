@@ -103,3 +103,18 @@ describe WeeklyScheduling do
     end
   end
 end
+
+describe "Assigning team members to chores" do
+  module Roster
+    def member_names
+      1.upto(10).collect {|i| "Member #{i}"}
+    end
+  end
+
+  it "should not assign the same member to multiple chores" do
+    assignees = chores.select(&:run_today?).collect(&:assignees).flatten
+    remaining_roster = chores.select(&:run_today?).each(&:assignees).last.class.class_variable_get(:@@roster)
+
+    expect(assignees - remaining_roster).to eq assignees
+  end
+end

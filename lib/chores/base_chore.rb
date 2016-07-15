@@ -1,11 +1,14 @@
-class BaseChore
-  attr_reader :scheduling, :n_assignees, :offset, :roster
+require './lib/roster'
 
-  def initialize(scheduling:, roster:, n_assignees: 1, offset: 0)
+class BaseChore
+  include Roster
+  attr_reader :scheduling, :n_assignees, :offset
+
+  def initialize(scheduling:, n_assignees: 1, offset: 0)
     @scheduling = scheduling
     @n_assignees = n_assignees
     @offset = offset # to control which member starts, not anything date-related
-    @roster = roster
+    @@roster = member_names
   end
 
   def run_today?
@@ -19,7 +22,7 @@ class BaseChore
   def assignees_on(date)
     index = n_assignees * scheduling.run_index_on(date) + offset
     index.upto(index + n_assignees - 1).map do |i|
-      roster[i % roster.length]
+      select_member(@@roster, i)
     end
   end
 
