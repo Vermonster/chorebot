@@ -4,7 +4,7 @@ require 'digest'
 require_relative './lib/schedulings'
 require_relative './lib/chores'
 
-NO_CHORE_LIST = %w(paul asross)
+NO_CHORE_LIST = %w(paul asross jordanking)
 
 def member_names
   names = []
