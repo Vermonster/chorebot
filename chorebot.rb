@@ -61,14 +61,6 @@ def chores
     ),
     PlantChore.new(
       roster: roster,
-      name: 'Maud, Frank, and Henri',
-      heading: 'h.pzcfgmk69r6q',
-      image_path: 'maud_frank_and_henri.png',
-      scheduling: MonthlyScheduling.new,
-      offset: 3
-    ),
-    PlantChore.new(
-      roster: roster,
       name: 'Chester',
       heading: 'h.7ymknjojnom7',
       image_path: 'chester.jpg',
