@@ -107,7 +107,7 @@ end
 describe "Assigning team members to chores" do
   module Roster
     def member_names
-      1.upto(10).collect {|i| "Member #{i}"}
+      1.upto(10).collect {|i| { member: "Member #{i}", assigned: false } }
     end
   end
 
