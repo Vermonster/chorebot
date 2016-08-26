@@ -1,6 +1,9 @@
 require 'rspec'
 require 'pry'
+require 'timecop'
 require_relative '../chorebot'
+require_relative './helpers/roster'
+include Roster
 
 def indexes_and_dates_for(scheduling, iterations = 1000)
   date = Date.today
@@ -105,10 +108,18 @@ describe WeeklyScheduling do
 end
 
 describe "Assigning team members to chores" do
-  module Roster
-    def member_names
-      1.upto(10).collect {|i| { member: "Member #{i}", assigned: false } }
+  def future_chores(days_after_today)
+    assigned_chores = Hash.new { |h, k| h[k] = Array.new }
+
+    0.upto(days_after_today).each do |d|
+      Timecop.freeze(Date.today + d) do
+        chores.select(&:run_today?).each do |chore|
+          assigned_chores[chore.class].push chore.assignees
+        end
+      end
     end
+
+    assigned_chores
   end
 
   it "should not assign the same member to multiple chores" do
@@ -116,5 +127,21 @@ describe "Assigning team members to chores" do
     remaining_roster = chores.select(&:run_today?).each(&:assignees).last.class.class_variable_get(:@@roster)
 
     expect(assignees - remaining_roster).to eq assignees
+  end
+
+  it "should assign trash duty in alphabetical order" do
+    assigned_chores = future_chores(14)
+    trash_duty = assigned_chores[TrashChore].flatten
+
+    trash_duty.each_with_index do |assignee, n|
+      break if n == trash_duty.length - 1
+      next_assignee = trash_duty[n + 1]
+
+      if assignee == member_names.last[:member]
+        expect(assignee).to be > next_assignee
+      else
+        expect(assignee).to be < next_assignee
+      end
+    end
   end
 end
