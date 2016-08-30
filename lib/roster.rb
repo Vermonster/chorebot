@@ -2,7 +2,16 @@ require 'httparty'
 
 module Roster
   def select_member(roster, index)
-    roster.delete(roster[index % roster.length])
+    roster_index = index % roster.length
+    assigned = roster[roster_index][:assigned]
+
+    while assigned == true do
+      roster_index = (roster_index + 1) % roster.length
+      assigned = roster[roster_index][:assigned]
+    end
+
+    roster[roster_index][:assigned] = true
+    roster[roster_index][:member]
   end
 
   def member_names
@@ -13,6 +22,6 @@ module Roster
       next if NO_CHORE_LIST.include?(m['name'])
       names << m['name']
     end
-    names
+    names.map {|name| { member: name, assigned: false }}
   end
 end
