@@ -4,7 +4,7 @@ require 'digest'
 require_relative './lib/schedulings'
 require_relative './lib/chores'
 
-NO_CHORE_LIST = %w(paul asross jordanking)
+NO_CHORE_LIST = %w(paul asross jordanking ceren)
 
 def chores
   [
