@@ -66,9 +66,9 @@ end
 def weekly_cleanup_message
   post_message("Hey <!channel>, time to clean up the office!")
   if rand < 0.5
-    post_message("Also, remember to order <#{ENV['INSTACART_URL']}|snacks>, my precious :ring:", "Snack Gollum", ":gollum:")
+    post_message("Also, remember to order <#{ENV['INSTACART_URL']}|snacks>, we suggest #{rotating_store}, my precious :ring:", "Snack Gollum", ":gollum:")
   else
-    post_message("Also, if you want to \"see more\" snacks, <#{ENV['INSTACART_URL']}|order some>.", "Snack Audrey II", ":feedme:")
+    post_message("Also, if you want to \"see more\" snacks, <#{ENV['INSTACART_URL']}|order some>. We suggest #{rotating_store},", "Snack Audrey II", ":feedme:")
   end
 end
 
