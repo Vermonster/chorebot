@@ -22,19 +22,6 @@ def chores
       offset: -4
     ),
     PlantChore.new(
-      name: 'Bertha',
-      heading: 'h.sl24hns7ta7c',
-      image_path: "bertha.jpg",
-      scheduling: MonthlyScheduling.new
-    ),
-    PlantChore.new(
-      name: 'Edward',
-      heading: 'h.wlvxy5bc7z7d',
-      image_path: "edward.jpg",
-      scheduling: MonthlyScheduling.new,
-      offset: 1
-    ),
-    PlantChore.new(
       name: 'Lula',
       heading: 'h.nvlbm0zacdtz',
       image_path: "lula.jpg",
