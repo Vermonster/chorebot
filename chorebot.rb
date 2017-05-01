@@ -53,14 +53,15 @@ end
 def weekly_cleanup_message
   post_message("Hey <!channel>, time to clean up the office!")
   if rand < 0.5
-    post_message("Also, remember to order <#{ENV['INSTACART_URL']}|snacks>, we suggest #{rotating_store}, my precious :ring:", "Snack Gollum", ":gollum:")
+    post_message("Also, remember to order <#{ENV['INSTACART_URL']}|snacks>, we suggest #{@store_of_the_week}, my precious :ring:", "Snack Gollum", ":gollum:")
   else
-    post_message("Also, if you want to \"see more\" snacks, <#{ENV['INSTACART_URL']}|order some>. We suggest #{rotating_store},", "Snack Audrey II", ":feedme:")
+    post_message("Also, if you want to \"see more\" snacks, <#{ENV['INSTACART_URL']}|order some>. We suggest #{@store_of_the_week},", "Snack Audrey II", ":feedme:")
   end
 end
 
 def weekly_snack_message
-  post_message "It's snack time! <#{ENV['INSTACART_URL']}|Here's the cart>. This week, we suggest #{rotating_store}. :gollum:"
+  @store_of_the_week = rotating_store
+  post_message "It's snack time! <#{ENV['INSTACART_URL']}|Here's the cart>. This week, we suggest #{@store_of_the_week}. :gollum:"
 end
 
 def rotating_store(day = Date.today)
