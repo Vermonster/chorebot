@@ -5,6 +5,7 @@ require_relative './lib/schedulings'
 require_relative './lib/chores'
 
 NO_CHORE_LIST = %w(paul asross jordanking ceren)
+INSTACART_STORES = ['HMart', 'Star Market', 'Whole Foods']
 
 def chores
   [
@@ -53,17 +54,20 @@ end
 def weekly_cleanup_message
   post_message("Hey <!channel>, time to clean up the office!")
   if rand < 0.5
-    post_message("Also, remember to order <#{ENV['INSTACART_URL']}|snacks>, we suggest #{@store_of_the_week}, my precious :ring:", "Snack Gollum", ":gollum:")
+    post_message("Also, remember to order <#{ENV['INSTACART_URL']}|snacks>, we suggest #{this_weeks_store}, my precious :ring:", "Snack Gollum", ":gollum:")
   else
-    post_message("Also, if you want to \"see more\" snacks, <#{ENV['INSTACART_URL']}|order some>. We suggest #{@store_of_the_week},", "Snack Audrey II", ":feedme:")
+    post_message("Also, if you want to \"see more\" snacks, <#{ENV['INSTACART_URL']}|order some>. We suggest #{this_weeks_store},", "Snack Audrey II", ":feedme:")
   end
 end
 
 def weekly_snack_message
-  @store_of_the_week = rotating_store
-  post_message "It's snack time! <#{ENV['INSTACART_URL']}|Here's the cart>. This week, we suggest #{@store_of_the_week}. :gollum:"
+  post_message "It's snack time! <#{ENV['INSTACART_URL']}|Here's the cart>. This week, we suggest #{rotating_store}. :gollum:"
 end
 
 def rotating_store(day = Date.today)
-  ['HMart', 'Star Market', 'Whole Foods'][day.cweek % 3]
+  INSTACART_STORES[day.cweek % 3]
+end
+
+def this_weeks_store
+  INSTACART_STORES[(Date.today.cweek-1) % 3]
 end
