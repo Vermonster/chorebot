@@ -10,12 +10,12 @@ INSTACART_STORES = ['HMart', 'Star Market', 'Whole Foods']
 def chores
   [
     TrashChore.new(
-      scheduling: WeeklyScheduling.new([:monday, :wednesday, :friday]),
+      scheduling: WeeklyScheduling.new([:tuesday, :friday]),
       n_assignees: 2,
       offset: -8
     ),
     RecyclingChore.new(
-      scheduling: WeeklyScheduling.new([:monday, :thursday]),
+      scheduling: WeeklyScheduling.new([:thrusday]),
       offset: -5
     ),
     DishChore.new(
